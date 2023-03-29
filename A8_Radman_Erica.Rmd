@@ -1,0 +1,75 @@
+---
+title: "A8_Radman_Erica"
+output: html_document
+date: "2023-03-06"
+---
+
+#In this report, I aim to investigate the effect of garlic mustard on plant communities and compare the effect of garlic mustard presence/absence and sampling population on plant communities. Ideally, the techniques and visualizations below adequately analyze the data to better understand the patterns and trends.
+
+# Loading packages 
+```{r}
+library(vegan)
+library(ggplot2)
+```
+
+# Reading the dataset 
+```{r}
+dat<-read.csv("FloristicSurvey.csv")
+```
+
+# Inspecting the raw data
+```{r}
+head(dat)
+str(dat)
+summary(dat)
+```
+
+# Altering dataset
+# I decided to remove the Quadrate column from the dataset as it inhibited the analysis of numeric columns
+
+```{r}
+dat1<-subset(dat, select = -Quadrate)
+dat1
+```
+
+# Question 1: What effect (if any) does garlic mustard have on the plant community?
+# Plot 1 
+
+```{r}
+plot1<-ggplot(aes(x=Location, y=Rosettes, colour=interaction(Claytonia_virginiana,Anemone_hepatica, Grass_tuft,Trillium_grandifolium,	Erythronium.trout.lily., Acer_saccharum,	Dicentra_cucularia,	Bloodroot,	Gallium_aparine,	Ulmus_americana,	Unknown_1,	Unknown_2,	Unknown_3.rannunculaceae.,	Unknown_4,	Dryopteris_marginalis,	Ostrich_fern,	Plantago_lanceolata,	Violet,	Rhamnus_frangula,	Raspberry,	Unknown_5,	Unknown_6,	Solidago_canadensis,	Unknown_7,	Dandelion,	grass,	viccia_cracca,	herb_robert,	thorny_ash,	rhamnus_cathartica,	rhubarb,	Unknown_8,	Unknown_9,	maianthenum_racemosum)), data=dat, xlab = "Location", ylab = "Rosettes") + geom_point()
+plot1
+```
+
+# The plot above compares the location, either inside or outisde of garlic mustard patches, to the number of rosette pathces, with the colour of the points displaying the variety of species at all sites. The goal of my plot was to compare if the variety of species of plant life was inhibited by the presence of garlic mustard. The boxplot shows that sites without garlic mustard have a higher number of species on average compared to sites with garlic mustard. This suggests that garlic mustard has a negative effect on the plant community, reducing the number of species present.
+
+# Question 2: What has a stronger effect on plant communities: the presence/absence of garlic mustard (in/out) or sampling population?
+# To answer this question, we will compare the plant community data between sites with and without garlic mustard and also between different sampling populations. We will use a multivariate analysis approach and create a non-metric multidimensional scaling (NMDS) plot. First, we will calculate the Bray-Curtis dissimilarity matrix:
+
+```{r}
+dist <- vegdist(dat1[,3:ncol(dat1)], method = "bray")
+```
+
+```{r}
+set.seed(123)
+nmds <- metaMDS(dist, k = 2)
+plot(nmds, type = "n")
+points(nmds, col = dat1$Rosettes)
+points(nmds, col = dat1$Population, pch = 19)
+legend("topright", legend = c("Rosettes", "Populations"), col = c("black", "blue"), pch = c(1,19))
+```
+
+#The NMDS plot shows the clustering of sites based on their plant community composition. The points are colored by garlic mustard rosette presence/absence and sampling population. We can see that there is some separation of sites with and without garlic mustard, indicating a difference in plant community composition. However, the separation is not as clear as the separation between different sampling populations. The points with different shapes represent different sampling populations, and we can see that they cluster together more tightly than sites with and without garlic mustard. This suggests that sampling population has a stronger effect on plant communities than garlic mustard presence/absence.
+
+# Conclusion:
+# Our analysis shows that garlic mustard has a negative effect on plant communities, reducing the number of species present. However, the effect of garlic mustard is not as strong as the effect of sampling population, which has a greater influence on plant community composition. These findings highlight the importance of considering multiple factors when studying plant communities and the potential impact of invasive species.
+
+
+
+
+
+
+
+
+
+
+
